@@ -19,7 +19,7 @@ interface Post {
   title: string;
 }
 
-const posts: Array<Post> = [];
+const posts: { [key: string]: Post } = {};
 
 app.get('/posts', (_: Request, res: Response) => {
   res.send(posts);
@@ -28,8 +28,8 @@ app.get('/posts', (_: Request, res: Response) => {
 app.post('/posts', (req: Request, res: Response) => {
   const { title } = req.body;
   const id = randomId();
-  posts.push({ id, title });
-  res.status(201).send(posts.find(post => post.id === id));
+  posts[id] = { id, title };
+  res.status(201).send(posts[id]);
 });
 
 app.listen(4000, () => {
