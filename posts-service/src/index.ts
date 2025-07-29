@@ -4,9 +4,11 @@
 // The posts are stored in memory for simplicity.
 import express, { Request, Response }  from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 const randomId = (): string => {
   const now = Date.now();
