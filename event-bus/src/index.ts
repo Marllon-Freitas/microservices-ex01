@@ -11,9 +11,11 @@ app.use(bodyParser.json());
 app.post('/events', async (req: Request, res: Response) => {
   const event = req.body;
 
+  console.log('Event received: ==========', event);
+
   axios.post('http://localhost:4000/events', event)
     .then(() => {
-      console.log('Event sent to posts service');
+      console.log('Event sent to posts service', event);
     })
     .catch(error => {
       console.error('Error sending event to posts service:', error);
@@ -21,7 +23,7 @@ app.post('/events', async (req: Request, res: Response) => {
 
   axios.post('http://localhost:4001/events', event)
     .then(() => {
-      console.log('Event sent to comments service');
+      console.log('Event sent to comments service', event);
     })
     .catch(error => {
       console.error('Error sending event to comments service:', error);
@@ -29,7 +31,7 @@ app.post('/events', async (req: Request, res: Response) => {
 
   axios.post('http://localhost:4002/events', event)
     .then(() => {
-      console.log('Event sent to query service');
+      console.log('Event sent to query service', event);
     })
     .catch(error => {
       console.error('Error sending event to query service:', error);

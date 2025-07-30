@@ -5,6 +5,7 @@
 import express, { Request, Response }  from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import axios from 'axios';
 
 const app = express();
 app.use(bodyParser.json());
@@ -28,8 +29,6 @@ app.get('/posts/:id/comments', (req: Request, res: Response) => {
   res.send(postComments);
 });
 
-console.log('Comments service is running on port 4001', commentsByPostId);
-
 app.post('/posts/:id/comments', (req: Request, res: Response) => {
   const { content } = req.body;
   const id = randomId();
@@ -38,9 +37,32 @@ app.post('/posts/:id/comments', (req: Request, res: Response) => {
   comments.push({ id, content });
 
   commentsByPostId[req.params.id] = comments;
-  console.log(`Comment added to post ${req.params.id}:`, { id, content });
-  console.log(commentsByPostId);
+
+  const event = {
+    type: 'CommentCreated',
+    data: {
+      id,
+      postId: req.params.id,
+      content,
+    },
+  };
+
+  axios.post('http://localhost:4005/events', event)
+    .then(() => {
+      console.log('Event sent to event bus');
+    })
+    .catch(error => {
+      console.error('Error sending event to event bus:', error);
+    });
+
   res.status(201).send({ id, content });
+});
+
+app.post('/events', (req: Request, res: Response) => {
+  const event = req.body;
+  console.log('Event received:', event);
+
+  res.send({ status: 'OK' });
 });
 
 app.listen(4001, () => {

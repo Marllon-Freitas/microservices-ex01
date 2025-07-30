@@ -5,6 +5,7 @@
 import express, { Request, Response }  from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import axios from 'axios';
 
 const app = express();
 app.use(bodyParser.json());
@@ -30,8 +31,33 @@ app.get('/posts', (_: Request, res: Response) => {
 app.post('/posts', (req: Request, res: Response) => {
   const { title } = req.body;
   const id = randomId();
+
   posts[id] = { id, title };
+
+  const event = {
+    type: 'PostCreated',
+    data: {
+      id,
+      title,
+    },
+  };
+
+  axios.post('http://localhost:4005/events', event)
+    .then(() => {
+      console.log('Event sent to event bus');
+    })
+    .catch(error => {
+      console.error('Error sending event to event bus:', error);
+    });
+  
   res.status(201).send(posts[id]);
+});
+
+app.post('/events', (req: Request, res: Response) => {
+  const event = req.body;
+  console.log('Event received:', event);
+
+  res.send({ status: 'OK' });
 });
 
 app.listen(4000, () => {
