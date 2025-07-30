@@ -24,11 +24,6 @@ interface Comment {
 
 const commentsByPostId: { [key: string]: Comment[] } = {};
 
-app.get('/posts/:id/comments', (req: Request, res: Response) => {
-  const postComments = commentsByPostId[req.params.id] || [];
-  res.send(postComments);
-});
-
 app.post('/posts/:id/comments', (req: Request, res: Response) => {
   const { content } = req.body;
   const id = randomId();

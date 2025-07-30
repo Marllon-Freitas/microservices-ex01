@@ -16,12 +16,20 @@ const commentApi = axios.create({
   timeout: 5000
 });
 
-export const fetchPosts = async () => {
+const queryApi = axios.create({
+  baseURL: 'http://localhost:4002',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 5000
+});
+
+export const fetchPostsAndComments = async () => {
   try {
-    const response = await postApi.get('/posts');
+    const response = await queryApi.get('/posts');
     return response.data;
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error fetching posts and comments:', error);
     throw error;
   }
 };
@@ -32,16 +40,6 @@ export const createPost = async (title: string) => {
     return response.data;
   } catch (error) {
     console.error('Error creating post:', error);
-    throw error;
-  }
-};
-
-export const fetchComments = async (postId: string) => {
-  try {
-    const response = await commentApi.get(`/posts/${postId}/comments`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching comments:', error);
     throw error;
   }
 };

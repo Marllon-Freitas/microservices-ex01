@@ -1,38 +1,36 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { fetchPosts } from "../services";
+import React, { useEffect, useState } from "react";
+import { fetchPostsAndComments } from "../services";
 import CommentCreation from "./CommentCreation";
-import CommentList from "./CommentList";
+import CommentList, { type Comment } from "./CommentList";
 
-type Post = {
+type PostsWitchComments = {
   id: string;
   title: string;
+  comments: Comment[];
 };
 
-
 const PostList: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PostsWitchComments[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const loadPosts = useCallback(async () => {
-    try {
-      const fetchedPosts = await fetchPosts();
-      setPosts(Object.values(fetchedPosts));
-    } catch (error) {
-      console.error("Error loading posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const fetchedPosts = await fetchPostsAndComments();
+        setPosts(Object.values(fetchedPosts));
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadPosts();
-  }, [loadPosts]);
+  }, []);
 
   if (loading) {
     return <div>Loading posts...</div>;
   }
-
-  console.log("Posts loaded:", posts);
 
   return (
     <div>
@@ -44,7 +42,7 @@ const PostList: React.FC = () => {
           <li key={post.id}>
             <h3>{post.title}</h3>
             <CommentCreation postId={post.id} />
-            <CommentList postId={post.id} />
+            <CommentList comments={post.comments} />
             <br />
             <hr />
             <br />

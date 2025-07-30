@@ -24,10 +24,6 @@ interface Post {
 
 const posts: { [key: string]: Post } = {};
 
-app.get('/posts', (_: Request, res: Response) => {
-  res.send(posts);
-});
-
 app.post('/posts', (req: Request, res: Response) => {
   const { title } = req.body;
   const id = randomId();
