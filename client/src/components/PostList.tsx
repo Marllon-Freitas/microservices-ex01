@@ -29,23 +29,20 @@ const PostList: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading posts...</div>;
+    return <div className="loading">Loading posts...</div>;
   }
 
   return (
     <div>
-      <h2>Posts:</h2>
-      {posts.length === 0 && <p>No posts available.</p>}
+      <h2>📋 Posts:</h2>
+      {posts.length === 0 && <p className="empty-state">No posts available.</p>}
       <br />
       <ul>
         {posts.map((post) => (
           <li key={post.id}>
-            <h3>{post.title}</h3>
+            <h3 title={post.title}>✨ {post.title}</h3>
             <CommentCreation postId={post.id} />
             <CommentList comments={post.comments} />
-            <br />
-            <hr />
-            <br />
           </li>
         ))}
       </ul>

@@ -3,13 +3,12 @@ import PostList from "./components/PostList"
 
 function App() {
   return (
-    <>
+    <div className="app-container">
+      <h1>📝 Blog Posts</h1>
       <PostCreation />
-      <br />
       <hr />
-      <br />
       <PostList />
-    </>
+    </div>
   )
 }
 
