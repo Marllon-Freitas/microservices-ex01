@@ -11,6 +11,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+const LOG_KEY = '[POSTS_SERVICE]: ';
+
 const randomId = (): string => {
   const now = Date.now();
   const random = Math.random().toString(36).substring(2, 15);
@@ -40,10 +42,10 @@ app.post('/posts', (req: Request, res: Response) => {
 
   axios.post('http://localhost:4005/events', event)
     .then(() => {
-      console.log('Event sent to event bus');
+      console.log(`${LOG_KEY}Event sent to event bus`);
     })
     .catch(error => {
-      console.error('Error sending event to event bus:', error);
+      console.error(`${LOG_KEY}Error sending event to event bus:`, error);
     });
   
   res.status(201).send(posts[id]);
@@ -51,7 +53,7 @@ app.post('/posts', (req: Request, res: Response) => {
 
 app.post('/events', (req: Request, res: Response) => {
   const event = req.body;
-  console.log('Event received:', event);
+  console.log(`${LOG_KEY}Event received:`, event);
 
   res.send({ status: 'OK' });
 });

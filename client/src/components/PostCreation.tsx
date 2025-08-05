@@ -13,11 +13,11 @@ const PostCreation: React.FC = () => {
 
     createPost(title)
       .then(post => {
-        console.log('Post criado:', post);
+        console.log('Post created:', post);
         setTitle('');
       })
       .catch(error => {
-        console.error('Erro ao criar post:', error);
+        console.error('Error creating post:', error);
         alert('Failed to create post. Please try again later.');
       });
   };

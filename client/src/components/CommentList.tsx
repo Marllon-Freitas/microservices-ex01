@@ -3,6 +3,7 @@ import React from "react";
 export type Comment = {
   id: string;
   content: string;
+  status?: string; // 'pending' | 'approved' | 'rejected'
 };
 
 const CommentList: React.FC<{ comments: Comment[] }> = ({ comments }) => {
@@ -14,7 +15,13 @@ const CommentList: React.FC<{ comments: Comment[] }> = ({ comments }) => {
       ) : (
         comments.map((comment) => (
           <div key={comment.id} className="comment-item">
-            <p title={comment.content}>{comment.content}</p>
+            {comment.status === "approved" ? (
+              <p title={comment.content}>{comment.content}</p>
+            ) : comment.status === "rejected" ? (
+              <p className="rejected">Comment rejected</p>
+            ) : (
+              <p className="pending">Comment is pending moderation</p>
+            )}
           </div>
         ))
       )}
