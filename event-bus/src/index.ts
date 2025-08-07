@@ -12,8 +12,12 @@ const LOG_KEY = '[EVENT_BUS]: ';
 const app = express();
 app.use(bodyParser.json());
 
+const events: {  type: string; data: any }[] = [];
+
 app.post('/events', (req: Request, res: Response) => {
   const event = req.body;
+
+  events.push(event);
 
   console.log('Event received: ', event);
 
@@ -50,6 +54,10 @@ app.post('/events', (req: Request, res: Response) => {
     });
 
   res.send({ status: 'OK' });
+});
+
+app.get('/events', (_: Request, res: Response) => {
+  res.send(events);
 });
 
 app.listen(4005, () => {

@@ -6,6 +6,7 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import axios from 'axios';
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,10 +20,8 @@ app.get('/posts', (_: Request, res: Response) => {
   res.send(posts);
 });
 
-app.post('/events', (req: Request, res: Response) => {
-  const { type, data } = req.body;
-
-  if (type === 'PostCreated') {
+const handleEvents = (type: string, data: any) => {
+    if (type === 'PostCreated') {
     const { id, title } = data;
     posts[id] = { id, title, comments: [] };
     console.log(`${LOG_KEY}Post created:`, { id, title });
@@ -35,7 +34,7 @@ app.post('/events', (req: Request, res: Response) => {
     
     if (!post) {
       console.error(`${LOG_KEY}Post with id ${postId} not found for comment creation.`);
-      return res.status(404).send({ error: 'Post not found' });
+      return;
     }
 
     post.comments.push({ id, content, status });
@@ -59,12 +58,29 @@ app.post('/events', (req: Request, res: Response) => {
       console.error(`${LOG_KEY}Post with id ${postId} not found for comment update.`);
     }
   }
+}
 
-  console.log(`${LOG_KEY}Event received:`, posts);
+app.post('/events', (req: Request, res: Response) => {
+  const { type, data } = req.body;
+
+  handleEvents(type, data);
 
   res.send({ status: 'OK' });
 });
 
-app.listen(4002, () => {
+app.listen(4002, async () => {
   console.log('Posts service is running on port 4002');
+
+  await axios.get('http://localhost:4005/events')
+    .then(response => {
+      console.log(`${LOG_KEY}Fetched events from event bus`);
+      response.data.forEach((event: { type: string; data: any }) => {
+        console.log(`${LOG_KEY}Processing event:`, event.type);
+        handleEvents(event.type, event.data);
+      });
+    })
+    .catch(error => {
+      console.error(`${LOG_KEY}Error fetching events from event bus:`, error);
+    }
+  );
 });
